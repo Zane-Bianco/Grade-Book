@@ -27,7 +27,7 @@ int readData(ifstream& inFile, string names[], int scores[][numScores]) {
     }
     return count;
 }
-void calculateAverages(int scores[][numScores], double averages[], int studentCount) { // Calculates averages using each students scores
+void calculateAverages(int scores[][numScores], double averages[], int studentCount) { 
     for (int i = 0; i < studentCount; i++) {
         int total = 0;
         for (int j = 0; j < numScores;j++) {
@@ -37,7 +37,7 @@ void calculateAverages(int scores[][numScores], double averages[], int studentCo
     }
 
 }
-char calculateLetterGrade(double average) { // Uses average to calculate letter grade
+char calculateLetterGrade(double average) {
     if (average >= 90) {
         return 'A';
     }
@@ -64,7 +64,7 @@ void CreateReport(string names[], double averages[], int studentCount) {
     
     for (int i = 0; i < studentCount; ++i) {
         cout << left << setw(20) << names[i]
-            << setw(15) << fixed << setprecision(2) << averages[i]  // Shows average with 2 decimal places
+            << setw(15) << fixed << setprecision(2) << averages[i] 
             << setw(10) << calculateLetterGrade(averages[i]) << endl;
     }
 }
@@ -85,7 +85,7 @@ int main() {
     calculateAverages(scores, averages, studentCount);
     CreateReport(names, averages, studentCount);
    
-    inFile.close();  // Closes the file
+    inFile.close(); 
     return 0;
 }
 
