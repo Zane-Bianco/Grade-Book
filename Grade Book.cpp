@@ -5,47 +5,35 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include <iomanip>
 using namespace std;
 
-int readDataFromFile(ifstream& file, vector<string>& names, vector<vector<int>>& scores) {
-    string name;
+const int maxStudents = 15;
+const int numScores = 5;
+
+int readData(ifstream& inFile, string names[], int scores[][numScores]);
+void calculateAverages(int scores[][numScores], double averages[], int studentCount);
+char calculateLetterGrade(double average);
+void CreateReport(string names[], double averages[], int studentCount);
+
+int readData(ifstream& inFile, string names[], int scores[][numScores]) {
     int count = 0;
 
-    // Loops through the file and read data
-    while (file >> name) {
-        names.push_back(name); // Add student name
-
-        vector<int> studentScores;
-        int score;
-
-        // Read all scores for the current student
-        while (file >> score) {
-            studentScores.push_back(score);
-
-            // Check if next line starts with a name 
-            if (file.peek() == '\n' || file.eof()) {
-                break;
-            }
+    while (count<maxStudents && inFile >> names[count]) {
+        for (int i = 0; i < numScores; i++) {
+            inFile >> scores[count][i];
         }
-
-        scores.push_back(studentScores); // Add the scores for the current student
         count++;
     }
-
-    return count; // Return the number of student records
+    return count;
 }
-void calculateAverages(const vector<vector<int>>& scores, vector<double>& averages) { // Calculates averages using each students scores
-    for (const auto& studentScores : scores) {
-        double sum = 0;
-
-        for (int score : studentScores) {
-            sum += score;
+void calculateAverages(int scores[][numScores], double averages[], int studentCount) { // Calculates averages using each students scores
+    for (int i = 0; i < studentCount; i++) {
+        int total = 0;
+        for (int j = 0; j < numScores;j++) {
+            total += scores[i][j];
         }
-        double average = sum / studentScores.size();
-
-        averages.push_back(average);
+        averages[i] = static_cast<double>(total) / numScores;
     }
 
 }
@@ -66,41 +54,38 @@ char calculateLetterGrade(double average) { // Uses average to calculate letter 
         return 'F';
     }
 }
-void CreateReport(const vector<string>& names, const vector<double>& averages) {
-    //Report Header
+void CreateReport(string names[], double averages[], int studentCount) {
     cout << left << setw(20) << "Student Name"
         << setw(15) << "Average Score"
         << setw(10) << "Grade" << endl;
-    //seperator for design
+
     cout << string(45, '-') << endl;
 
-    //Output Report
-    for (size_t i = 0; i < names.size(); ++i) {
+    
+    for (int i = 0; i < studentCount; ++i) {
         cout << left << setw(20) << names[i]
             << setw(15) << fixed << setprecision(2) << averages[i]  // Shows average with 2 decimal places
             << setw(10) << calculateLetterGrade(averages[i]) << endl;
     }
 }
 int main() {
-    ifstream inputFile("C:\\Users\\Speedy\\Documents\\StudentGrades.txt");  // Opens the desired file
-    if (!inputFile) {
+    
+
+    string names[maxStudents];  
+    int scores[maxStudents][numScores]; 
+    double averages[maxStudents];  
+
+    ifstream inFile("StudentGrades.txt");  
+    if (!inFile) {
         cerr << "Error opening the file!" << endl;
         return 1;
     }
-
-    vector<string> names;  // Vector to store student names
-    vector<vector<int>> scores;  // Vector of vectors to store scores
-    vector<double> averages;  // Vector to store the average scores
-
-    // Call the function to read data from the file
-    int numRecords = readDataFromFile(inputFile, names, scores);
-
-    // Call the function to calculate averages
-    calculateAverages(scores, averages);
-    // Call the function to create and output report
-    CreateReport(names, averages);
-
-    inputFile.close();  // Closes the file
+    
+    int studentCount = readData(inFile, names, scores);
+    calculateAverages(scores, averages, studentCount);
+    CreateReport(names, averages, studentCount);
+   
+    inFile.close();  // Closes the file
     return 0;
 }
 
